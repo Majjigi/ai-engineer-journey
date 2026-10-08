@@ -153,6 +153,17 @@ print("6. print((3, 1, 2).index(1))")
 print("7. print(('a', 'b', 'c')[1:])")
 print("8. x, y = (5, 10); print(x, y)")
 
+print("Practice makes it easier to understand tuples in Python!")
+print((1, 2, 3));
+print((10, 20)[0]); 
+print(len((1, 2, 3)));
+print((1, 2) + (3, 4));
+print((1, 2, 2).count(2));
+print((3, 1, 2).index(1));
+print(('a', 'b', 'c')[1:]);
+x, y = (5, 10)
+print(x, y)
+
 print("Example 1:", (1, 2, 3))
 print("Example 2:", (10, 20)[0])
 print("Example 3:", len((1, 2, 3)))
