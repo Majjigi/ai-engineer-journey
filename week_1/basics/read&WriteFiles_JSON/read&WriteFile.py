@@ -1,18 +1,28 @@
 import argparse
 import json
+from dataclasses import asdict, dataclass
+from datetime import date
 from pathlib import Path
 
 
 FILE_PATH = Path(__file__).with_name("expenses.json")
 
 
+@dataclass
+class Expense:
+    name: str
+    amount: float
+    date: str
+
+
 def normalize_expense(expense):
     if not isinstance(expense, dict):
-        return {"name": "Unknown", "amount": 0.0}
+        return Expense(name="Unknown", amount=0.0, date="")
 
     name = expense.get("name") or expense.get("description") or "Unknown"
     amount = expense.get("amount", 0)
-    return {"name": str(name), "amount": float(amount)}
+    expense_date = expense.get("date", "")
+    return Expense(name=str(name), amount=float(amount), date=str(expense_date))
 
 
 def load_expenses():
@@ -24,8 +34,9 @@ def load_expenses():
 
     expenses = data.get("expenses", [])
     normalized_expenses = [normalize_expense(expense) for expense in expenses]
+    serialized_expenses = [asdict(expense) for expense in normalized_expenses]
 
-    if normalized_expenses != expenses:
+    if serialized_expenses != expenses:
         save_expenses(normalized_expenses)
 
     return normalized_expenses
@@ -33,7 +44,7 @@ def load_expenses():
 
 def save_expenses(expenses):
     with FILE_PATH.open("w", encoding="utf-8") as file:
-        json.dump({"expenses": expenses}, file, indent=2)
+        json.dump({"expenses": [asdict(expense) for expense in expenses]}, file, indent=2)
         file.write("\n")
 
 
@@ -51,7 +62,7 @@ def add_expense(name, amount):
         raise ValueError("Amount cannot be negative.")
 
     expenses = load_expenses()
-    expense = {"name": name, "amount": round(amount_value, 2)}
+    expense = Expense(name=name, amount=round(amount_value, 2), date=date.today().isoformat())
     expenses.append(expense)
     save_expenses(expenses)
     return expense
@@ -65,9 +76,8 @@ def list_expenses():
 
     print("Expenses:")
     for index, expense in enumerate(expenses, start=1):
-        name = expense.get("name", "Unknown")
-        amount = float(expense.get("amount", 0))
-        print(f"{index}. {name}: ${amount:.2f}")
+        expense_date = f" ({expense.date})" if expense.date else ""
+        print(f"{index}. {expense.name}: ${expense.amount:.2f}{expense_date}")
     return expenses
 
 
@@ -89,7 +99,7 @@ def delete_expense(index):
 
 def show_total():
     expenses = load_expenses()
-    total = sum(float(expense.get("amount", 0)) for expense in expenses)
+    total = sum(expense.amount for expense in expenses)
     print(f"Total: ${total:.2f}")
     return round(total, 2)
 
@@ -110,7 +120,7 @@ def interactive_menu():
             amount = input("Expense amount: ").strip()
             try:
                 expense = add_expense(name, amount)
-                print(f"Added: {expense['name']} - ${expense['amount']:.2f}")
+                print(f"Added: {expense.name} - ${expense.amount:.2f}")
             except ValueError as exc:
                 print(f"Error: {exc}")
 
@@ -124,7 +134,7 @@ def interactive_menu():
             expense_number = input("Enter the number to delete: ").strip()
             try:
                 removed = delete_expense(expense_number)
-                print(f"Deleted: {removed['name']} - ${float(removed['amount']):.2f}")
+                print(f"Deleted: {removed.name} - ${removed.amount:.2f}")
             except (ValueError, IndexError) as exc:
                 print(f"Error: {exc}")
 
@@ -163,7 +173,7 @@ def main():
     if args.command == "add":
         try:
             expense = add_expense(args.name, args.amount)
-            print(f"Added: {expense['name']} - ${expense['amount']:.2f}")
+            print(f"Added: {expense.name} - ${expense.amount:.2f}")
         except ValueError as exc:
             print(f"Error: {exc}")
         return
@@ -175,7 +185,7 @@ def main():
     if args.command == "delete":
         try:
             removed = delete_expense(args.index)
-            print(f"Deleted: {removed['name']} - ${float(removed['amount']):.2f}")
+            print(f"Deleted: {removed.name} - ${removed.amount:.2f}")
         except (ValueError, IndexError) as exc:
             print(f"Error: {exc}")
         return
