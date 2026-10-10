@@ -1,0 +1,46 @@
+{
+  "username": "octocat",
+  "repository_count": 8,
+  "repositories": [
+    {
+      "name": "Spoon-Knife",
+      "stars": 14092,
+      "language": "HTML"
+    },
+    {
+      "name": "Hello-World",
+      "stars": 3805,
+      "language": null
+    },
+    {
+      "name": "octocat.github.io",
+      "stars": 1182,
+      "language": "CSS"
+    },
+    {
+      "name": "hello-worId",
+      "stars": 821,
+      "language": null
+    },
+    {
+      "name": "linguist",
+      "stars": 768,
+      "language": "Ruby"
+    },
+    {
+      "name": "git-consortium",
+      "stars": 618,
+      "language": null
+    },
+    {
+      "name": "test-repo1",
+      "stars": 493,
+      "language": null
+    },
+    {
+      "name": "boysenberry-repo-1",
+      "stars": 482,
+      "language": null
+    }
+  ]
+}
